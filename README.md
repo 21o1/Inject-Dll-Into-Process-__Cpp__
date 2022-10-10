@@ -14,7 +14,7 @@
 ``#include <iostream>``             
 ``#include <TlHelp32.h>``    
       
-***So Now Lets try to find the process id of the program which we will provide soon , so lets store the id as double word, ``DWORD`` so lets start( Read The Comments in the source ).***
+***So Now Lets try to find the process id of the program which we will provide soon , so lets store the id as double word, ``DWORD`` so lets start( Read The Comments in the source,, AND I ATTACHED CPP INJ WITH THIS RESP U CAN CHECK IT ).***
 ```
 #include <iostream>             
 #include <TlHelp32.h>
@@ -34,4 +34,23 @@ DOWRD getProcessId(cont char* procname){
         }
     }
     CloseHandle(hSn);//to close the handle
+    return pid;
+}
+int main(){
+      const char* procname = "anything.exe";//so here we will provide the name of the program that we want to inj
+      const char* path "C:\\\....";//the path of the dll file
+      DWORD pid = 0;//def the pid again here to use it soon
+      pid = getProcessId(procname);//give pid new value (the address of our program)
+      HANDLE hPrc = OpenProcess(PROCESS_ALL_ACCESS,0,pid);//def handle and open our program process in the memory with full access (read,write,exec) 
+      if(hprc && hprc != INVALID_HANDLE_VALUE){
+            void* loc = VirtualAllocEx(hProc, 0, MAX_PATH, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);//so we added if stat to check the handle then we start alloc memory to write in
+            WriteProcessMemory(hPrc,loc,path,strlen(path)+1,0);//and yea we inj our dll here into the process 
+            HANDLE hThread = CreateRemoteThread(hProc, 0, 0, (LPTHREAD_START_ROUTINE)LoadLibraryA, loc, 0, 0);//so here we start thread to load the dll or jst to mk the inj logical and useable
+            if(hThread){
+                 CloseHandle(hThread);
+            }
+      }
+      if(hPrc){
+            CloseHandle(hPrc);
+      }
 }
