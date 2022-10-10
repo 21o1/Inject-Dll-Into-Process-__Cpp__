@@ -1,85 +1,37 @@
 # Inject Dll Into Process (C++)
-``
-#include <iostream>
-#include <Windows.h>
+***So Sometimes to add some contents to game source without reach the main source and change it you have to inject the dll's to the procces in the memory while the process running so lets start with what is dll?.***   
+## DLL
+***Dynamic Linked Library(DLL) its a shareable file use for windows os , its like a library include func, codes the programs can use.***   
+## FAQ
+- **How this will be useful?**    
+***For Hackers that thing will help a lot like adding sub-code to the main will be good especially in Game Hacking.***
+- **How the dll will run after inject?**     
+***well after injecting the process the dll will auto run in the main memory.***    
+- **Is The dll will get the access to the main source?**    
+***yea for sure the dll file will get the access to the source and this is a great point for game hacking.***   
+## Source&Explain
+***lets start with the includes so we need 2 lib***    
+``#include <iostream>``             
+``#include <TlHelp32.h>``    
+      
+***So Now Lets try to find the process id of the program which we will provide soon , so lets store the id as double word, ``DWORD`` so lets start( Read The Comments in the source ).***
+```
+#include <iostream>             
 #include <TlHelp32.h>
-#include <string>
-
-using namespace std;
-
-DWORD GetPrName(const char* pName){
-    DWORD PID = 0;
-    HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-    if (hSnap != INVALID_HANDLE_VALUE) {
-        PROCESSENTRY32 PrEnt;
-        PrEnt.dwSize = sizeof(PrEnt);
-        if (Process32First(hSnap, &PrEnt)) {
-            do {
-                if (!_stricmp(PrEnt.szExeFile, pName)) {
-                    PID = PrEnt.th32ParentProcessID;
-                    break;
-                }
-            } while (Process32Next(hSnap, &PrEnt));
+DOWRD getProcessId(cont char* procname){
+    DWORD PID =0; //lets set process id here to 0 to mk it possible to reach in next lines
+    HANDLE hSn = CreateToolhelp32SnapShot(TH32CS_SNAPPROCESS, 0);//lets add our handle which will help us to find the process id in the memory
+    if{hSn != INVALID_HANDLE_VALUE}{
+        PROCESSENTRY32 PrEn;//so first we add if statment to check if our handle created then def id for our handle
+        PrEnt.dwSize = sizeof(PrEn);//here we def the size of ent(jst to find the address)
+        if(Process32First(hSn,&PrEnt)){
+            do{
+                if(!_stricmp(PrEn.szExeFile,procname)){
+                    pid = PrEn.th32parentProcessID;//so we added if cond to check the first process which we created , then we started loop which will change the procces until reach the process we want (you will understand what i mean by reading the source)
+                    break; //so what this lines will do , this lines will jst keep trying the running process until find process have the same name(procname which we will provide soon) after find the process will get the pid then store it
+                }while(Process32Next(hSn,&PrEn));
+            }
         }
     }
-    CloseHandle(hSnap);
-    return PID;
+    CloseHandle(hSn);//to close the handle
 }
-int main()
-{
-    const char* pName = "csgo.exe";
-    const char* path = "helloworld";
-    
-    cout << "Path: " << path << "\nProcess Name: " << pName << endl;
-    cout << "injcting the dll ...." << endl;
-    bool hr = true;
-    const char* stages[5] = { "Checking The ProcId","Alloc The mem, injecting the dll","Done[+]" };
-    int n = 0;
-    int na = 0;
-    DWORD PID = 0;
-    while (hr == true) {
-
-        cout << "loading(" << stages[n] << ")\r";
-        if (PID && n == 0) {
-            n += 1;
-            na = 0;
-        }
-        else {
-            PID = GetPrName(pName);
-            Sleep(35);
-            if (na == 200) {
-                cout << "\nTime Out Check The Process Name(You Can Use Task Manager To Find Process Name)";
-                return 0;
-            }
-
-
-            HANDLE hProc = OpenProcess(PROCESS_ALL_ACCESS, 0, PID);
-
-
-            if (hProc && hProc != INVALID_HANDLE_VALUE && n == 1) {
-                void* loc = VirtualAllocEx(hProc, 0, MAX_PATH, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-                WriteProcessMemory(hProc, loc, path, strlen(path) + 1, 0);
-                HANDLE hThread = CreateRemoteThread(hProc, 0, 0, (LPTHREAD_START_ROUTINE)LoadLibraryA, loc, 0, 0);
-                if (hThread) {
-                    CloseHandle(hThread);
-                }
-                n += 1;
-                
-
-            }
-            if (hProc && n == 2) {
-                
-                CloseHandle(hProc);
-                hr = false;
-
-            }
-             
-            na += 1;
-
-        }
-
-    }
-    system("cls");
-    cout << "\n\n\n\n\t\t\t\tCheck The Process Now...!{Injecting Done}\n\n\n";
-}
-``
