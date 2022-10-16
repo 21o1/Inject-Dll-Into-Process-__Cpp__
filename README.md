@@ -6,8 +6,8 @@
 - **How this will be useful?**    
 ***For Hackers that thing will help a lot like adding sub-code to the main will be good especially in Game Hacking.***
 - **How the dll will run after inject?**     
-***well after injecting the process the dll will auto run in the main memory.***    
-- **Is The dll will get the access to the main source?**    
+***well after injecting  the dll will auto run in the main memory.***    
+- **Is The dll file will get the access to the main source?**    
 ***yea for sure the dll file will get the access to the source and this is a great point for game hacking.***   
 ## Source&Explain
 ***lets start with the includes so we need 2 lib***    
